@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GreenOps — Carbon-Aware Scheduler</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="mark">Gx</div>
+    <div>
+      <div class="name">GreenOps</div>
+      <div class="tag">carbon-aware container scheduler</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="speed-wrap">
+      <span>sim speed</span>
+      <input type="range" id="speedSlider" min="1" max="120" value="20">
+      <span class="mono" id="speedLabel">20x</span>
+    </div>
+    <div class="clock-box">grid time <b class="mono" id="clockVal">00:00</b></div>
+    <div class="mode-badge" id="modeBadge">SIMULATED CLOCK</div>
+    <button class="btn" id="submitJobBtn">+ Submit workload</button>
+  </div>
+</header>
+
+<div class="pulse-wrap">
+  <div class="pulse-head">
+    <div class="title">Live grid carbon signal — best available region</div>
+    <div><span class="live-val mono" id="pulseVal">—</span> <span class="live-unit">gCO₂/kWh</span></div>
+  </div>
+  <canvas id="pulseCanvas" height="100"></canvas>
+</div>
+
+<div class="region-strip" id="regionStrip"></div>
+
+<div class="layout">
+  <div class="col-main">
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="p-title">Job timeline — scheduled / deferred / running</div>
+        <div class="p-sub">click a job for decision detail</div>
+      </div>
+      <div class="timeline" id="timeline"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="p-title">Cumulative CO₂ savings vs. carbon-naive baseline</div>
+        <div class="p-sub" id="savingsSub">— kg CO₂ saved</div>
+      </div>
+      <canvas id="savingsChart" height="150"></canvas>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="p-title">Scheduling history</div>
+        <div class="p-sub">latest first</div>
+      </div>
+      <table class="hist">
+        <thead><tr><th>Job</th><th>Priority</th><th>Carbon @ exec</th><th>Delayed?</th><th>Exec time</th></tr></thead>
+        <tbody id="histBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <div class="col-side">
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="p-title">Carbon budget burn-down</div>
+        <div class="p-sub">per namespace</div>
+      </div>
+      <div id="budgetList"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="p-title">Container view</div>
+        <div class="p-sub mono">docker ps</div>
+      </div>
+      <table class="docker">
+        <thead><tr><th>ID</th><th>Image</th><th>Status</th><th>Region</th><th>NS</th></tr></thead>
+        <tbody id="dockerBody"></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="p-title">Sustainability report</div>
+        <div class="p-sub">LLM-generated</div>
+      </div>
+      <div class="llm-body" id="llmBody">
+        <div class="llm-placeholder">No report generated yet for this window.</div>
+      </div>
+      <div style="margin-top:12px;">
+        <button class="btn ghost" id="genReportBtn" style="width:100%;">Generate report</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Decision drill-down modal -->
+<div class="overlay" id="drillOverlay">
+  <div class="modal" id="drillModal"></div>
+</div>
+
+<!-- Submit workload modal -->
+<div class="overlay" id="submitOverlay">
+  <div class="modal">
+    <h3>Submit workload</h3>
+    <div class="sub">Runs through the same policy engine the scheduler uses.</div>
+    <div class="field">
+      <label>Job name</label>
+      <input type="text" id="jobName" placeholder="nightly-batch-report">
+    </div>
+    <div class="field">
+      <label>Priority tier</label>
+      <select id="jobPriority">
+        <option value="critical">Critical — never deferred</option>
+        <option value="standard" selected>Standard — bounded SLA window</option>
+        <option value="flexible">Flexible — max carbon savings</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Namespace / team</label>
+      <select id="jobNamespace">
+        <option>platform-eng</option>
+        <option>data-science</option>
+        <option>ml-training</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Estimated runtime (min)</label>
+      <input type="number" id="jobRuntime" value="20" min="1">
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="cancelSubmit">Cancel</button>
+      <button class="btn" id="confirmSubmit">Run through scheduler</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastHost"></div>
+
+<script src="dashboard.js"></script>
+</body>
+</html>
