@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GreenOps — Carbon-Aware Scheduler</title>
+<title>GreenOps: Carbon-Aware Scheduler</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <link rel="stylesheet" href="dashboard.css">
 </head>
@@ -33,8 +33,8 @@
 
 <div class="pulse-wrap">
   <div class="pulse-head">
-    <div class="title">Live grid carbon signal — best available region</div>
-    <div><span class="live-val mono" id="pulseVal">—</span> <span class="live-unit">gCO₂/kWh</span></div>
+    <div class="title">Live grid carbon signal, best available region</div>
+    <div><span class="live-val mono" id="pulseVal">0</span> <span class="live-unit">gCO₂/kWh</span></div>
   </div>
   <canvas id="pulseCanvas" height="100"></canvas>
 </div>
@@ -46,7 +46,7 @@
 
     <div class="panel">
       <div class="panel-head">
-        <div class="p-title">Job timeline — scheduled / deferred / running</div>
+        <div class="p-title">Job timeline: scheduled, deferred, or running</div>
         <div class="p-sub">click a job for decision detail</div>
       </div>
       <div class="timeline" id="timeline"></div>
@@ -55,7 +55,7 @@
     <div class="panel">
       <div class="panel-head">
         <div class="p-title">Cumulative CO₂ savings vs. carbon-naive baseline</div>
-        <div class="p-sub" id="savingsSub">— kg CO₂ saved</div>
+        <div class="p-sub" id="savingsSub">0 kg CO₂ saved</div>
       </div>
       <canvas id="savingsChart" height="150"></canvas>
     </div>
@@ -127,9 +127,9 @@
     <div class="field">
       <label>Priority tier</label>
       <select id="jobPriority">
-        <option value="critical">Critical — never deferred</option>
-        <option value="standard" selected>Standard — bounded SLA window</option>
-        <option value="flexible">Flexible — max carbon savings</option>
+        <option value="critical">Critical: never deferred</option>
+        <option value="standard" selected>Standard: bounded SLA window</option>
+        <option value="flexible">Flexible: max carbon savings</option>
       </select>
     </div>
     <div class="field">

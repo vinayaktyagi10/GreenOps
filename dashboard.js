@@ -1,21 +1,21 @@
 /* =========================================================================
-   GreenOps dashboard — plain HTML/CSS/JS, no build step required.
-   Everything here runs client-side against MOCK / SIMULATED data so the
-   UI is fully demoable before the FastAPI backend (Rohit) and the
-   Scheduling Engine (Vinayak) are wired up.
+   GreenOps dashboard: plain HTML/CSS/JS, no build step required.
+   Everything here runs client-side against mock/simulated data so the
+   UI is fully demoable before the FastAPI backend and the scheduling
+   engine are wired up.
 
-   WHEN THE REAL BACKEND IS READY:
+   When the real backend is ready:
    - Replace CONFIG.API_BASE with the real FastAPI URL.
-   - Replace fetchLiveState()/generateReport() bodies with real fetch() calls
-     (both already try a real endpoint first and fall back to mock data,
-     so swapping is mostly deleting the fallback branch once it's stable).
+   - Replace fetchLiveState()/generateReport() bodies with real fetch() calls.
+     Both already try a real endpoint first and fall back to mock data,
+     so swapping is mostly deleting the fallback branch once it's stable.
    - Replace the setInterval simulation loop with the WebSocket
-     `container_update` stream described in 09_Team_Roles.md.
+     `container_update` stream described in the API specification.
    ========================================================================= */
 
 const CONFIG = {
   API_BASE: "http://localhost:8000",   // FastAPI backend, once running
-  WEIGHTS: { w1: 0.5, w2: 0.3, w3: 0.4 } // mirrors Aryan's score() function
+  WEIGHTS: { w1: 0.5, w2: 0.3, w3: 0.4 } // mirrors the policy engine's score() function
 };
 
 // ---- Regions (simulated grids with different generation mixes) ----------
@@ -51,7 +51,7 @@ function carbonIntensity(region, minuteOfDay){
   return Math.max(60, Math.round(v));
 }
 function forecastTrend(region, minuteOfDay){
-  // slope of intensity over the next 2 simulated hours — positive = getting dirtier
+  // slope of intensity over the next 2 simulated hours; positive means getting dirtier
   const now = carbonIntensity(region, minuteOfDay);
   const later = carbonIntensity(region, minuteOfDay + 120);
   return later - now;
@@ -63,7 +63,7 @@ function zoneFor(v){
 }
 function normalize(v, min=60, max=650){ return Math.min(1, Math.max(0, (v-min)/(max-min))); }
 
-// ---- Policy / scoring engine (client-side mirror of Aryan's formula) ----
+// ---- Policy / scoring engine (client-side mirror of the policy engine's formula) ----
 // score = w1*normalize(current) + w2*normalize(forecast_trend) - w3*urgency_penalty
 // Lower score = better time/place to run (it's a "carbon cost" score).
 function scoreRegion(region, minuteOfDay, job){
@@ -121,7 +121,7 @@ function evaluateJob(job, isFirstPass){
 
   if(overBudget){
     job.status = "deferred";
-    job.deferReason = "namespace carbon budget exceeded — holding until budget resets or priority forces it";
+    job.deferReason = "namespace carbon budget exceeded, holding until budget resets or priority forces it";
     if(isFirstPass) toast(job, "deferred", `${job.name}: over budget, holding`);
     return;
   }
@@ -195,7 +195,7 @@ function initSparklines(){
     const ctx = document.getElementById("spark-"+r.id).getContext("2d");
     sparkCharts[r.id] = new Chart(ctx, {
       type:"line",
-      data:{ labels:[], datasets:[{ data:[], borderColor:"#4FD1E8", borderWidth:2, pointRadius:0, tension:0.35, fill:true, backgroundColor:"rgba(79,209,232,0.08)" }]},
+      data:{ labels:[], datasets:[{ data:[], borderColor:"#6C8EE0", borderWidth:2, pointRadius:0, tension:0.35, fill:true, backgroundColor:"rgba(108,142,224,0.08)" }]},
       options:{
         animation:false, responsive:true, maintainAspectRatio:false,
         plugins:{legend:{display:false}, tooltip:{enabled:false}},
@@ -209,15 +209,15 @@ function initSavingsChart(){
   savingsChart = new Chart(ctx, {
     type:"line",
     data:{ labels:[], datasets:[
-      { label:"Carbon-aware (actual)", data:[], borderColor:"#3DDC84", backgroundColor:"rgba(61,220,132,0.08)", fill:true, tension:0.3, pointRadius:0, borderWidth:2 },
-      { label:"Naive baseline", data:[], borderColor:"#7C8AA5", borderDash:[4,4], fill:false, tension:0.3, pointRadius:0, borderWidth:1.5 },
+      { label:"Carbon-aware (actual)", data:[], borderColor:"#7ED45A", backgroundColor:"rgba(126,212,90,0.08)", fill:true, tension:0.3, pointRadius:0, borderWidth:2 },
+      { label:"Naive baseline", data:[], borderColor:"#9FAA88", borderDash:[4,4], fill:false, tension:0.3, pointRadius:0, borderWidth:1.5 },
     ]},
     options:{
       animation:false, responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ labels:{ color:"#7C8AA5", font:{family:"IBM Plex Mono", size:10} } } },
+      plugins:{ legend:{ labels:{ color:"#9FAA88", font:{family:"IBM Plex Mono", size:10} } } },
       scales:{
-        x:{ ticks:{ color:"#4C5A75", font:{size:9} }, grid:{ color:"rgba(255,255,255,0.03)" } },
-        y:{ ticks:{ color:"#4C5A75", font:{size:9} }, grid:{ color:"rgba(255,255,255,0.03)" }, title:{display:true,text:"kg CO₂",color:"#7C8AA5",font:{size:10}} }
+        x:{ ticks:{ color:"#7C8968", font:{size:9} }, grid:{ color:"rgba(255,255,255,0.03)" } },
+        y:{ ticks:{ color:"#7C8968", font:{size:9} }, grid:{ color:"rgba(255,255,255,0.03)" }, title:{display:true,text:"kg CO₂",color:"#9FAA88",font:{size:10}} }
       }
     }
   });
@@ -246,7 +246,7 @@ function drawPulse(){
   });
   const last = pulseHistory[pulseHistory.length-1];
   const zone = zoneFor(last);
-  const color = zone==="clean" ? "#3DDC84" : zone==="medium" ? "#F2B84B" : "#F2554B";
+  const color = zone==="clean" ? "#7ED45A" : zone==="medium" ? "#F0A83E" : "#E35A3A";
   pulseCtx.strokeStyle = color;
   pulseCtx.shadowColor = color;
   pulseCtx.shadowBlur = 8;
@@ -267,10 +267,9 @@ function fmtClock(min){
   return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");
 }
 
-// Region cards are built ONCE (so their <canvas> elements, and the Chart.js
-// instances attached to them, persist). Every render() call after that only
-// updates numbers/badges/chart-data — it never rebuilds the DOM or charts.
-// (Recreating Chart.js instances every animation frame was the earlier bug.)
+// Region cards are built once, so their <canvas> elements and the Chart.js
+// instances attached to them persist. Every render() call after that only
+// updates numbers, badges, and chart data; it never rebuilds the DOM or charts.
 function initRegionStrip(){
   const strip = document.getElementById("regionStrip");
   strip.innerHTML = "";
@@ -280,9 +279,9 @@ function initRegionStrip(){
     card.innerHTML = `
       <div class="r-top">
         <div><div class="r-name">${r.name}</div><div class="r-desc">${r.desc}</div></div>
-        <span class="badge" id="badge-${r.id}">—</span>
+        <span class="badge" id="badge-${r.id}">...</span>
       </div>
-      <div class="r-value" id="value-${r.id}">— <span>gCO₂/kWh</span></div>
+      <div class="r-value" id="value-${r.id}">0 <span>gCO₂/kWh</span></div>
       <canvas id="spark-${r.id}" class="r-spark"></canvas>
     `;
     strip.appendChild(card);
@@ -301,7 +300,7 @@ function render(){
   document.getElementById("pulseVal").textContent = bestVal;
   drawPulse();
 
-  // region cards — update values/badges in place, update (don't recreate) sparklines
+  // region cards: update values/badges in place, update (don't recreate) sparklines
   REGIONS.forEach(r => {
     const v = carbonIntensity(r, simMinutes);
     const zone = zoneFor(v);
@@ -314,7 +313,7 @@ function render(){
     for(let i=12;i>=0;i--) pts.push(carbonIntensity(r, simMinutes - i*10));
     c.data.labels = pts.map((_,i)=>i);
     c.data.datasets[0].data = pts;
-    c.data.datasets[0].borderColor = zone==="clean" ? "#3DDC84" : zone==="medium" ? "#F2B84B" : "#F2554B";
+    c.data.datasets[0].borderColor = zone==="clean" ? "#7ED45A" : zone==="medium" ? "#F0A83E" : "#E35A3A";
     c.update("none");
   });
 
@@ -366,7 +365,7 @@ function render(){
   bl.innerHTML = "";
   NAMESPACES.forEach(ns => {
     const pct = Math.min(100, (ns.usedKg/ns.budgetKg)*100);
-    const color = pct > 90 ? "#F2554B" : pct > 65 ? "#F2B84B" : "#3DDC84";
+    const color = pct > 90 ? "#E35A3A" : pct > 65 ? "#F0A83E" : "#7ED45A";
     const row = document.createElement("div");
     row.className = "budget-row";
     row.innerHTML = `
@@ -406,9 +405,9 @@ function showDrill(job){
         <div>Forecast trend (next 2h): <span class="mono">${d.trend>0?'+':''}${d.trend}</span></div>
         <div>Urgency pressure: <span class="mono">${d.urgency.toFixed(2)}</span> (waited ${Math.round(d.waitedMin)}/${d.slaWindow} min of SLA)</div>
         <div>Policy score: <span class="mono">${d.score.toFixed(3)}</span> <span style="color:var(--text-dim)">(lower = better time to run)</span></div>
-        <div style="margin-top:8px;color:var(--text-dim);">status: <b style="color:var(--text-primary)">${job.status}</b>${job.deferReason ? ' — '+job.deferReason : ''}${job.runReason ? ' — '+job.runReason : ''}</div>
+        <div style="margin-top:8px;color:var(--text-dim);">status: <b style="color:var(--text-primary)">${job.status}</b>${job.deferReason ? ', '+job.deferReason : ''}${job.runReason ? ', '+job.runReason : ''}</div>
       </div>
-    ` : `<div class="sub">Critical tier — bypassed scoring entirely.</div>`}
+    ` : `<div class="sub">Critical tier: bypassed scoring entirely.</div>`}
     <div class="modal-actions"><button class="btn ghost" id="closeDrill">Close</button></div>
   `;
   document.getElementById("drillOverlay").classList.add("show");
@@ -451,7 +450,7 @@ async function generateReport(){
       baseline that ignores grid conditions, by running <b>${stats.jobs_run}</b>
       workloads in cleaner windows/regions and holding <b>${stats.jobs_deferred}</b>
       lower-priority job(s) for a cleaner slot.</p>
-      <div class="llm-tip"><b>Note:</b> live LLM backend not reachable — showing a
+      <div class="llm-tip"><b>Note:</b> live LLM backend not reachable, showing a
       template-generated summary instead of a Claude-generated one.</div>
     `;
   } finally {
@@ -487,7 +486,7 @@ submitJob({ name:"nightly-etl", priority:"flexible", namespace:"data-science", r
 submitJob({ name:"model-eval-batch", priority:"standard", namespace:"ml-training", runtime:25 });
 
 // ---- Main loop: advances the simulation clock and re-renders ------------
-// Runs on a fixed interval (not requestAnimationFrame) — this is a data
+// Runs on a fixed interval, not requestAnimationFrame, since this is a data
 // dashboard, not an animation, so ~2-3 updates/sec is plenty and keeps
 // Chart.js data arrays and table rebuilds from growing every 16ms.
 initRegionStrip();
