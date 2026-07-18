@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GreenOps: Carbon-Aware Container Scheduler</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="website.css">
+</head>
+<body>
+
+<nav id="nav">
+  <div class="brand"><div class="mark">Gx</div><div class="name">GreenOps</div></div>
+  <div class="nav-links">
+    <a href="#problem">Problem</a>
+    <a href="#workflow">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#team">Team</a>
+  </div>
+  <a class="nav-cta" href="dashboard.html">Open dashboard →</a>
+</nav>
+
+<section class="hero">
+  <div class="eyebrow">HPE Hackathon · Synergy 2026 · Problem Statement 01</div>
+  <h1>Compute doesn't know<br>what time it is. <span class="grad">GreenOps does.</span></h1>
+  <p class="lede">A real, working carbon-aware scheduler that defers and places non-urgent
+  container workloads based on live and forecasted grid carbon intensity, across time
+  and across regions, without touching a single line of your job code.</p>
+
+  <div class="hero-actions">
+    <a class="btn-primary" href="dashboard.html">View live dashboard →</a>
+    <a class="btn-secondary" href="#workflow">See how it decides</a>
+  </div>
+
+  <div class="hero-wave">
+    <div class="hero-wave-head"><span>grid carbon signal, <b>illustrative</b></span><span>gCO₂/kWh</span></div>
+    <canvas id="heroWave" height="70"></canvas>
+  </div>
+
+  <div class="stat-strip">
+    <div class="stat"><div class="num">0%</div><div class="lbl">critical jobs ever delayed</div></div>
+    <div class="stat"><div class="num">3</div><div class="lbl">simulated grid regions</div></div>
+    <div class="stat"><div class="num">&lt;2s</div><div class="lbl">dashboard update latency</div></div>
+    <div class="stat"><div class="num">15–30%</div><div class="lbl">target carbon savings vs. naive</div></div>
+  </div>
+</section>
+
+<section id="problem">
+  <div class="eyebrow">The problem</div>
+  <h2 class="section-title">The same job, run at the wrong hour, can emit multiples more CO₂.</h2>
+  <div class="problem-grid">
+    <p class="section-desc">
+      Electricity grids swing between clean and dirty all day, driven by the live mix of
+      wind, solar, gas, and coal on the line. Almost nothing that schedules compute today,
+      including cron, Kubernetes, and batch queues, treats that as a signal. A report job kicked off at
+      2pm on a coal-heavy grid can cost several times the carbon of the identical job run
+      at 2am on a wind-heavy one, or shifted to a cleaner region entirely. GreenOps makes
+      that signal a first-class citizen in scheduling, right alongside CPU and memory.
+    </p>
+    <div class="zone-demo reveal">
+      <div class="zone-row">
+        <span class="zone-dot clean"></span>
+        <div class="zt"><b>Clean window</b><span>wind/solar-heavy, run now</span></div>
+        <div class="zv">180–260</div>
+      </div>
+      <div class="zone-row">
+        <span class="zone-dot medium"></span>
+        <div class="zt"><b>Medium</b><span>mixed grid, worth a short wait</span></div>
+        <div class="zv">260–400</div>
+      </div>
+      <div class="zone-row">
+        <span class="zone-dot dirty"></span>
+        <div class="zt"><b>Dirty window</b><span>coal/gas-heavy, defer if possible</span></div>
+        <div class="zv">400+</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="workflow">
+  <div class="eyebrow">How it works</div>
+  <h2 class="section-title">One workflow, from submission to a running (or waiting) container.</h2>
+  <div class="workflow">
+    <div class="wf-step reveal">
+      <div class="wf-num">01</div>
+      <div class="wf-body"><b>Submit a workload</b><p>Name, estimated runtime, and namespace: same as any job queue.</p></div>
+    </div>
+    <div class="wf-step reveal">
+      <div class="wf-num">02</div>
+      <div class="wf-body"><b>Choose a priority tier</b><p>Critical, Standard, or Flexible: how much the job is allowed to wait for a cleaner grid.</p><span class="wf-tag">critical never waits</span></div>
+    </div>
+    <div class="wf-step reveal">
+      <div class="wf-num">03</div>
+      <div class="wf-body"><b>Fetch live + forecasted carbon intensity</b><p>Electricity Maps data across simulated regions, refreshed continuously.</p></div>
+    </div>
+    <div class="wf-step reveal">
+      <div class="wf-num">04</div>
+      <div class="wf-body"><b>Score with the policy engine</b><p>Weighs current intensity, forecast trend, urgency, and namespace carbon budget into a single decision score.</p></div>
+    </div>
+    <div class="wf-step reveal">
+      <div class="wf-num">05</div>
+      <div class="wf-body"><b>Execute now, or hold</b><p>Clean enough → a real Docker container is created immediately. Not yet → the job waits and is re-scored on the next tick.</p></div>
+    </div>
+    <div class="wf-step reveal">
+      <div class="wf-num">06</div>
+      <div class="wf-body"><b>Log and report</b><p>Every decision is recorded, including carbon at execution, delay time, and region, feeding the dashboard and the LLM summary.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="eyebrow">What's built</div>
+  <h2 class="section-title">Enough surface area for a real technical conversation, not just a click-through.</h2>
+  <div class="feature-grid">
+    <div class="feature-card reveal">
+      <div class="fi">⚙</div>
+      <h3>Real scheduling engine</h3>
+      <p>Containers structurally don't exist until the policy approves them. Verifiable live via <span class="mono">docker ps</span>, not a mocked status flag.</p>
+      <span class="fb">Live</span>
+    </div>
+    <div class="feature-card reveal">
+      <div class="fi">◐</div>
+      <h3>Priority tiers</h3>
+      <p>Critical always runs immediately. Standard has a bounded SLA window. Flexible defers aggressively for maximum savings.</p>
+      <span class="fb">Live</span>
+    </div>
+    <div class="feature-card reveal">
+      <div class="fi">✦</div>
+      <h3>Forecasting model</h3>
+      <p>Weighted moving average baseline, with a Prophet-based upgrade path, predicting next-24h carbon intensity per region.</p>
+      <span class="fb">Live</span>
+    </div>
+    <div class="feature-card reveal">
+      <div class="fi">▤</div>
+      <h3>Carbon budgets</h3>
+      <p>Every namespace gets a carbon budget with live burn-down. Flexible-tier jobs can be hard-blocked once a team's budget runs out.</p>
+      <span class="fb">Live</span>
+    </div>
+    <div class="feature-card reveal">
+      <div class="fi">✎</div>
+      <h3>LLM sustainability reports</h3>
+      <p>A plain-English summary of scheduling decisions and savings, generated on demand, with a template fallback if the API is unreachable.</p>
+      <span class="fb">Live</span>
+    </div>
+    <div class="feature-card reveal">
+      <div class="fi">⧉</div>
+      <h3>Simulation clock</h3>
+      <p>Replays historical carbon data at accelerated speed, so the demo works even if venue wifi or the live API doesn't.</p>
+      <span class="fb">Live</span>
+    </div>
+    <div class="feature-card roadmap reveal">
+      <div class="fi">✉</div>
+      <h3>Email notifications</h3>
+      <p>Notify a team when their job actually starts running.</p>
+      <span class="fb">Roadmap</span>
+    </div>
+    <div class="feature-card roadmap reveal">
+      <div class="fi">🏆</div>
+      <h3>Savings leaderboard</h3>
+      <p>Rank namespaces by carbon saved, to nudge friendly competition.</p>
+      <span class="fb">Roadmap</span>
+    </div>
+    <div class="feature-card roadmap reveal">
+      <div class="fi">⬇</div>
+      <h3>PDF export</h3>
+      <p>Export the sustainability report for offline sharing.</p>
+      <span class="fb">Roadmap</span>
+    </div>
+  </div>
+
+  <div class="stack-strip">
+    <span class="chip">React + Vite</span>
+    <span class="chip">Tailwind CSS</span>
+    <span class="chip">FastAPI</span>
+    <span class="chip">SQLite / SQLAlchemy</span>
+    <span class="chip">docker-py</span>
+    <span class="chip">Electricity Maps API</span>
+    <span class="chip">Prophet</span>
+    <span class="chip">Claude API</span>
+    <span class="chip">WebSockets</span>
+  </div>
+</section>
+
+<section id="team">
+  <div class="eyebrow">The team</div>
+  <h2 class="section-title">Four owners, no single point of failure on knowledge.</h2>
+  <div class="team-grid">
+    <div class="team-card reveal">
+      <div class="avatar">V</div>
+      <div class="tname">Vinayak</div>
+      <div class="trole">Infra / Scheduling Lead</div>
+      <div class="towns">Scheduling engine, docker-py integration, region tagging, Docker event watcher.</div>
+    </div>
+    <div class="team-card reveal">
+      <div class="avatar">R</div>
+      <div class="tname">Rohit</div>
+      <div class="trole">Backend / Data Lead</div>
+      <div class="towns">FastAPI + SQLite, carbon ingestion service, simulation clock, REST + WebSocket API.</div>
+    </div>
+    <div class="team-card reveal">
+      <div class="avatar">A</div>
+      <div class="tname">Aryan</div>
+      <div class="trole">ML Lead</div>
+      <div class="towns">Forecasting model, policy engine scoring function, weight tuning against replayed data.</div>
+    </div>
+    <div class="team-card reveal">
+      <div class="avatar">H</div>
+      <div class="tname">Harsh</div>
+      <div class="trole">Frontend / Integration Lead</div>
+      <div class="towns">React dashboard, LLM reporting integration, demo script rehearsal.</div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="eyebrow" style="justify-content:center;">Synergy 2026 · Grand Finale, 31 July</div>
+  <h2>See the scheduler make a decision, live.</h2>
+  <p>Submit a workload, watch it wait for a cleaner grid, and watch it run. No backend required to try it.</p>
+  <div class="hero-actions">
+    <a class="btn-primary" href="dashboard.html">Open the dashboard →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="fbrand"><div class="mark" style="width:20px;height:20px;font-size:10px;border-radius:3px;background:var(--bg-panel-2);border:1px solid var(--cyan);display:flex;align-items:center;justify-content:center;color:var(--cyan);font-family:var(--font-mono);font-weight:600;">Gx</div>GreenOps, HPE Hackathon 2026</div>
+  <div>Static site · no backend required</div>
+</footer>
+
+<script src="website.js"></script>
+</body>
+</html>
