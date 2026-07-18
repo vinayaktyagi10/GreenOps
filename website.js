@@ -11,8 +11,8 @@
   }, { threshold: 0.15 });
   revealEls.forEach(el => io.observe(el));
 
-  // Decorative hero waveform — a fixed illustrative carbon-intensity curve,
-  // not live data (this page has no backend). Purely visual motif.
+  // Decorative hero waveform: a fixed illustrative carbon-intensity curve,
+  // not live data, since this page has no backend. Purely visual motif.
   const canvas = document.getElementById("heroWave");
   const ctx = canvas.getContext("2d");
   function drawWave(t){
@@ -31,9 +31,9 @@
     ctx.beginPath();
     pts.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
     const grad = ctx.createLinearGradient(0,0,w,0);
-    grad.addColorStop(0,"#3DDC84");
-    grad.addColorStop(0.5,"#F2B84B");
-    grad.addColorStop(1,"#4FD1E8");
+    grad.addColorStop(0,"#7ED45A");
+    grad.addColorStop(0.5,"#F0A83E");
+    grad.addColorStop(1,"#6C8EE0");
     ctx.strokeStyle = grad;
     ctx.lineWidth = 2;
     ctx.stroke();
@@ -46,6 +46,6 @@
   }
   animateWave();
 
-  // Mobile menu (simple toggle, no backend needed)
-  // Not wired to a visible button in this minimal layout — links collapse
+  // Mobile menu (simple toggle, no backend needed).
+  // Not wired to a visible button in this minimal layout. Links collapse
   // gracefully since the nav stacks under 800px via CSS alone.

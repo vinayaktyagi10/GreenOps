@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GreenOps — Carbon-Aware Container Scheduler</title>
+<title>GreenOps: Carbon-Aware Container Scheduler</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="website.css">
 </head>
 <body>
@@ -25,8 +25,8 @@
   <div class="eyebrow">HPE Hackathon · Synergy 2026 · Problem Statement 01</div>
   <h1>Compute doesn't know<br>what time it is. <span class="grad">GreenOps does.</span></h1>
   <p class="lede">A real, working carbon-aware scheduler that defers and places non-urgent
-  container workloads based on live and forecasted grid carbon intensity — across time
-  and across regions — without touching a single line of your job code.</p>
+  container workloads based on live and forecasted grid carbon intensity, across time
+  and across regions, without touching a single line of your job code.</p>
 
   <div class="hero-actions">
     <a class="btn-primary" href="dashboard.html">View live dashboard →</a>
@@ -34,7 +34,7 @@
   </div>
 
   <div class="hero-wave">
-    <div class="hero-wave-head"><span>grid carbon signal — <b>illustrative</b></span><span>gCO₂/kWh</span></div>
+    <div class="hero-wave-head"><span>grid carbon signal, <b>illustrative</b></span><span>gCO₂/kWh</span></div>
     <canvas id="heroWave" height="70"></canvas>
   </div>
 
@@ -52,8 +52,8 @@
   <div class="problem-grid">
     <p class="section-desc">
       Electricity grids swing between clean and dirty all day, driven by the live mix of
-      wind, solar, gas, and coal on the line. Almost nothing that schedules compute today —
-      cron, Kubernetes, batch queues — treats that as a signal. A report job kicked off at
+      wind, solar, gas, and coal on the line. Almost nothing that schedules compute today,
+      including cron, Kubernetes, and batch queues, treats that as a signal. A report job kicked off at
       2pm on a coal-heavy grid can cost several times the carbon of the identical job run
       at 2am on a wind-heavy one, or shifted to a cleaner region entirely. GreenOps makes
       that signal a first-class citizen in scheduling, right alongside CPU and memory.
@@ -84,11 +84,11 @@
   <div class="workflow">
     <div class="wf-step reveal">
       <div class="wf-num">01</div>
-      <div class="wf-body"><b>Submit a workload</b><p>Name, estimated runtime, and namespace — same as any job queue.</p></div>
+      <div class="wf-body"><b>Submit a workload</b><p>Name, estimated runtime, and namespace: same as any job queue.</p></div>
     </div>
     <div class="wf-step reveal">
       <div class="wf-num">02</div>
-      <div class="wf-body"><b>Choose a priority tier</b><p>Critical / Standard / Flexible — how much the job is allowed to wait for a cleaner grid.</p><span class="wf-tag">critical never waits</span></div>
+      <div class="wf-body"><b>Choose a priority tier</b><p>Critical, Standard, or Flexible: how much the job is allowed to wait for a cleaner grid.</p><span class="wf-tag">critical never waits</span></div>
     </div>
     <div class="wf-step reveal">
       <div class="wf-num">03</div>
@@ -104,7 +104,7 @@
     </div>
     <div class="wf-step reveal">
       <div class="wf-num">06</div>
-      <div class="wf-body"><b>Log and report</b><p>Every decision is recorded — carbon at execution, delay time, region — feeding the dashboard and the LLM summary.</p></div>
+      <div class="wf-body"><b>Log and report</b><p>Every decision is recorded, including carbon at execution, delay time, and region, feeding the dashboard and the LLM summary.</p></div>
     </div>
   </div>
 </section>
@@ -116,7 +116,7 @@
     <div class="feature-card reveal">
       <div class="fi">⚙</div>
       <h3>Real scheduling engine</h3>
-      <p>Containers structurally don't exist until the policy approves them — verifiable live via <span class="mono">docker ps</span>, not a mocked status flag.</p>
+      <p>Containers structurally don't exist until the policy approves them. Verifiable live via <span class="mono">docker ps</span>, not a mocked status flag.</p>
       <span class="fb">Live</span>
     </div>
     <div class="feature-card reveal">
@@ -140,7 +140,7 @@
     <div class="feature-card reveal">
       <div class="fi">✎</div>
       <h3>LLM sustainability reports</h3>
-      <p>A plain-English summary of scheduling decisions and savings, generated on demand — with a template fallback if the API is unreachable.</p>
+      <p>A plain-English summary of scheduling decisions and savings, generated on demand, with a template fallback if the API is unreachable.</p>
       <span class="fb">Live</span>
     </div>
     <div class="feature-card reveal">
@@ -216,14 +216,14 @@
 <section class="cta">
   <div class="eyebrow" style="justify-content:center;">Synergy 2026 · Grand Finale, 31 July</div>
   <h2>See the scheduler make a decision, live.</h2>
-  <p>Submit a workload, watch it wait for a cleaner grid, and watch it run — no backend required to try it.</p>
+  <p>Submit a workload, watch it wait for a cleaner grid, and watch it run. No backend required to try it.</p>
   <div class="hero-actions">
     <a class="btn-primary" href="dashboard.html">Open the dashboard →</a>
   </div>
 </section>
 
 <footer>
-  <div class="fbrand"><div class="mark" style="width:20px;height:20px;font-size:10px;border-radius:6px;background:linear-gradient(135deg,var(--clean),var(--cyan));display:flex;align-items:center;justify-content:center;color:#06121A;font-family:var(--font-mono);font-weight:700;">Gx</div>GreenOps — HPE Hackathon 2026</div>
+  <div class="fbrand"><div class="mark" style="width:20px;height:20px;font-size:10px;border-radius:3px;background:var(--bg-panel-2);border:1px solid var(--cyan);display:flex;align-items:center;justify-content:center;color:var(--cyan);font-family:var(--font-mono);font-weight:600;">Gx</div>GreenOps, HPE Hackathon 2026</div>
   <div>Static site · no backend required</div>
 </footer>
 
